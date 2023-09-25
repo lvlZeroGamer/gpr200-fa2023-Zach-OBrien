@@ -9,27 +9,30 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+struct Vertex
+{
+	float x, y, z;
+	float u, v;
+};
 
+Vertex vertices[4] = {
+	//x   //y  //z   u  v
+	{ -1, -1, 0.0, 0, 0},
+	{ 1, -1, 0.0, 1, 0},
+	{ 1,  1, 0.0, 1, 1},
+	{ -1, 1, 0.0, 0, 1}
+};
 
-unsigned int createVAO(float* vertexData, int numVertices, unsigned int* indicesData, int numIndices);
+unsigned int indices[6] = {
+	0, 1, 2,
+	2, 3, 0
+};
+
+unsigned int createVAO(Vertex* vertexData, int numVertices, unsigned int* indicesData, int numIndices);
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
-
-float vertices[12] = {
-	//x   //y  //z   
-	-1, -1, 0.0, 
-	 1, -1, 0.0,
-	 1,  1, 0.0,
-	 -1, 1, 0.0
-};
-
-unsigned int indices[6] = {
-	0 , 1 , 2 , //Triangle 1
-	2 , 3 , 0  //Triangle 2
-};
-
 
 float triangleColor[3] = { 1.0f, 0.5f, 0.0f };
 float triangleBrightness = 1.0f;
@@ -105,12 +108,7 @@ int main() {
 	printf("Shutting down...");
 }
 
-
-
-
-
-
-unsigned int createVAO(float* vertexData, int numVertices, unsigned int* indicesData, int numIndices){
+unsigned int createVAO(Vertex* vertexData, int numVertices, unsigned int* indicesData, int numIndices){
 	unsigned int vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -120,17 +118,20 @@ unsigned int createVAO(float* vertexData, int numVertices, unsigned int* indices
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	//Allocate space for + send vertex data to GPU.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numVertices * 3, vertexData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * numVertices, vertexData, GL_STATIC_DRAW);
 
 	//Position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (const void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)0);
 	glEnableVertexAttribArray(0);
+
+	//UV
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(offsetof(Vertex, u)));
+	glEnableVertexAttribArray(1);
 
 	unsigned int ebo;
 	glGenBuffers(1, &ebo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * numIndices, indicesData, GL_STATIC_DRAW);
-
 
 	return vao;
 }
