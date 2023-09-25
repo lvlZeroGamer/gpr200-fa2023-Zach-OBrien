@@ -35,6 +35,10 @@ const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
 float triangleColor[3] = { 1.0f, 0.5f, 0.0f };
+float hillColor[3] = { 0.0, 0.8, 0.0 };
+float sunColor[3] = { 1.0, 1.0, 0.0 };
+float colorDay[3] = { 1.0, 1.0, 0.0 };
+float colorNight[3] = { 0.9, 0.0, 0.5 };
 float triangleBrightness = 1.0f;
 bool showImGUIDemoWindow = true;
 
@@ -73,14 +77,21 @@ int main() {
 	shader.use();
 	glBindVertexArray(vao);
 
+
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
+		float time = (float)glfwGetTime();
 		//Set uniforms
 		shader.setFloat("_Brightness", triangleBrightness);
 		shader.setVec3("_Color", triangleColor[0], triangleColor[1], triangleColor[2]);
+		shader.setFloat("iTime", time);
+		shader.setVec2("iResolution", (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT);
+		shader.setVec3("hillColor", hillColor[0], hillColor[1], hillColor[2]);
+		shader.setVec3("sunColor", sunColor[0], sunColor[1], sunColor[2]);
+		shader.setVec3("colorDay", colorDay[0], colorDay[1], colorDay[2]);
+		shader.setVec3("colorNight", colorNight[0], colorNight[1], colorNight[2]);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
@@ -92,8 +103,11 @@ int main() {
 
 			ImGui::Begin("Settings");
 			ImGui::Checkbox("Show Demo Window", &showImGUIDemoWindow);
-			ImGui::ColorEdit3("Color", triangleColor);
-			ImGui::SliderFloat("Brightness", &triangleBrightness, 0.0f, 1.0f);
+			ImGui::ColorEdit3("Hill Color", hillColor);
+			ImGui::ColorEdit3("Sun Color", sunColor);
+			ImGui::ColorEdit3("Day Color", colorDay);
+			ImGui::ColorEdit3("Night Color", colorNight);
+			ImGui::DragFloat("Time", &time, 0.0f, 1.0f);
 			ImGui::End();
 			if (showImGUIDemoWindow) {
 				ImGui::ShowDemoWindow(&showImGUIDemoWindow);
