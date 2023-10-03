@@ -59,14 +59,16 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 
-	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
+	ew::Shader backgroundShader("assets/background.vert", "assets/background.frag");
+	ew::Shader characterShader("assets/character.vert", "assets/character.frag");
 
 	unsigned int quadVAO = createVAO(vertices, 4, indices, 6);
 
 	glBindVertexArray(quadVAO);
 
-	unsigned int textureA = loadTexture("assets/bricks.png", 0, 1);
-	unsigned int textureB = loadTexture("assets/noise.png", 0, 1);
+	unsigned int textureA = loadTexture("assets/bricks.png", 1, 1);
+	unsigned int textureB = loadTexture("assets/noise.png", 1, 1);
+	unsigned int textureC = loadTexture("assets/character.png", 0, 1);
 
 	//Place textureA in unit 0
 	glActiveTexture(GL_TEXTURE0);
@@ -75,21 +77,27 @@ int main() {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, textureB);
 
-	//Must be using this shader when setting uniforms
-	shader.use();
-	//Make sampler2D _BrickTexture sample from unit 0
-	shader.setInt("_BrickTexture", 0);
-	//Make sampler2D _MarioTexture sample from unit 1
-	shader.setInt("_NoiseTexture", 1);
 
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		float time = (float)glfwGetTime();
 
 		//Set uniforms
-		shader.use();
+		//Must be using this shader when setting uniforms
+		backgroundShader.use();
+		//Make sampler2D _BrickTexture sample from unit 0
+		backgroundShader.setInt("_BrickTexture", 0);
+		//Make sampler2D _MarioTexture sample from unit 1
+		backgroundShader.setInt("_NoiseTexture", 1);
+		backgroundShader.setFloat("iTime", time);
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
+		
+		characterShader.use();
+		characterShader.setInt("_CharacterTexture", 1);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
