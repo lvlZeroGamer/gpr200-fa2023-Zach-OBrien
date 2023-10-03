@@ -2,8 +2,11 @@
 out vec4 FragColor;
 in vec2 UV;
 
-uniform sampler2D _Texture;
+uniform sampler2D _BrickTexture;
+uniform sampler2D _NoiseTexture;
 
 void main(){
-	FragColor = texture(_Texture,UV);
+	float noise = texture(_NoiseTexture, UV).r;
+	vec2 uv = UV + noise * 0.1f;
+	FragColor = texture(_BrickTexture,uv);
 }
