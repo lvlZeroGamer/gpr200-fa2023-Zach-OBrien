@@ -77,7 +77,11 @@ int main() {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, textureB);
 
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, textureC);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -97,7 +101,8 @@ int main() {
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 		
 		characterShader.use();
-		characterShader.setInt("_CharacterTexture", 1);
+		characterShader.setInt("_CharacterTexture", 2);
+		characterShader.setFloat("iTime", time);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 

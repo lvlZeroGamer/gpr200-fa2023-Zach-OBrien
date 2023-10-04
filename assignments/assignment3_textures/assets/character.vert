@@ -8,5 +8,7 @@ uniform sampler2D _CharacterTexture;
 
 void main(){
 	UV = vUV;
-	gl_Position = vec4(vPos,1.0);
+	vec3 pos = vPos / 2.0;
+	pos.x += sin(iTime);
+	gl_Position = vec4(pos,1.0);
 }
