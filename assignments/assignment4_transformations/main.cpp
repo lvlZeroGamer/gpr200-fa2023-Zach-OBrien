@@ -53,6 +53,7 @@ int main() {
 
 	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
 	
+
 	//Cube mesh
 	ew::Mesh cubeMesh(ew::createCube(0.5f));
 	
@@ -66,7 +67,6 @@ int main() {
 		shader.use();
 
 		//TODO: Set model matrix uniform
-
 		cubeMesh.draw();
 
 		//Render UI
