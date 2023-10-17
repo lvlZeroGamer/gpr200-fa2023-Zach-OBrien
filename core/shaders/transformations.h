@@ -63,9 +63,28 @@ namespace myLib {
 		ew::Vec3 rotation = ew::Vec3(0.0f, 0.0f, 0.0f); //Euler angles (degrees)
 		ew::Vec3 scale = ew::Vec3(1.0f, 1.0f, 1.0f);
 		ew::Mat4 getModelMatrix() const {
-			return Translate(position) * RotateY(ew::Radians(rotation.y) * RotateX(ew::Radians(rotation.x)) * RotateZ(ew::Radians(rotation.z)) * Scale(scale)) ;
+			return Translate(position) * (RotateY(ew::Radians(rotation.y)) * (RotateX(ew::Radians(rotation.x)) * (RotateZ(ew::Radians(rotation.z)) * Scale(scale))));
 		}
 	};
+
+	//Creates a right handed view space
+//eye = eye (camera) position
+	//target = position to look at
+	//up = up axis, usually(0,1,0)
+	inline ew::Mat4 LookAt(ew::Vec3 eye, ew::Vec3 target, ew::Vec3 up) {
+		ew::Vec3 f = ew::Cross(eye, target);
+			//use ew::Cross for cross product!
+	};
+	//Orthographic projection
+	inline ew::Mat4 Orthographic(float height, float aspect, float near, float far) {
+		...
+	};
+	//Perspective projection
+	//fov = vertical aspect ratio (radians)
+	inline ew::Mat4 Perspective(float fov, float aspect, float near, float far) {
+		...
+	};
+
 }
 
 
