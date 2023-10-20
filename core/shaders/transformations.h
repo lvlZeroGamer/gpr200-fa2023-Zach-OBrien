@@ -3,7 +3,7 @@
 #include "../ew/ewMath/vec3.h"
 #include "../ew/ewMath/ewMath.h"
 
-namespace myLib {
+namespace shaders {
 	//Identity matrix
 	inline ew::Mat4 Identity() {
 		return ew::Mat4(
@@ -72,17 +72,41 @@ namespace myLib {
 	//target = position to look at
 	//up = up axis, usually(0,1,0)
 	inline ew::Mat4 LookAt(ew::Vec3 eye, ew::Vec3 target, ew::Vec3 up) {
-		ew::Vec3 f = ew::Cross(eye, target);
+		ew::Vec3 f = ew::Normalize(eye - target);
+		ew::Vec3 r = ew::Normalize(ew::Cross(up, f));
+		ew::Vec3 u = ew::Normalize(ew::Cross(f, r));
+		
+		ew::Mat4 m = ew::Mat4(
+			r.x, r.y, r.z, -ew::Dot(r, eye),
+			u.x, u.y, u.z, -ew::Dot(u, eye),
+			f.x, f.y, f.z, -ew::Dot(f, eye),
+			0, 0, 0, 1
+		);
 			//use ew::Cross for cross product!
 	};
 	//Orthographic projection
 	inline ew::Mat4 Orthographic(float height, float aspect, float near, float far) {
-		...
+		double r = (height * aspect) / 2;
+		double t = height / 2;
+
+		ew::Mat4 m = ew::Mat4(
+			2/(r - (-r)), 0, 0, -((r + (-r)) / (r - (-r))),
+			0, 2/(t - (-t)), 0, -((t + (-t)) / (t - (-t))),
+			0, 0, -(2 / (far - near)), -((far + near) / (far - near)),
+			0, 0, 0, 1
+		);
 	};
 	//Perspective projection
 	//fov = vertical aspect ratio (radians)
 	inline ew::Mat4 Perspective(float fov, float aspect, float near, float far) {
-		...
+		double c = tan(fov / 2);
+
+		ew::Mat4 m = ew::Mat4(
+			1/(c * aspect), 0, 0, 0,
+			0, 1/c, 0, 0,
+			0, 0, (near + far)/ (near - far), 2(far * near)/(near - far),
+			0, 0, -1, 0
+		);
 	};
 
 }
