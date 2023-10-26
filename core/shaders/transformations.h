@@ -63,7 +63,7 @@ namespace shaders {
 		ew::Vec3 rotation = ew::Vec3(0.0f, 0.0f, 0.0f); //Euler angles (degrees)
 		ew::Vec3 scale = ew::Vec3(1.0f, 1.0f, 1.0f);
 		ew::Mat4 getModelMatrix() const {
-			return Translate(position) * (RotateY(ew::Radians(rotation.y)) * (RotateX(ew::Radians(rotation.x)) * (RotateZ(ew::Radians(rotation.z)) * Scale(scale))));
+			return shaders::Translate(position) * (RotateY(ew::Radians(rotation.y)) * (RotateX(ew::Radians(rotation.x)) * (RotateZ(ew::Radians(rotation.z)) * shaders::Scale(scale))));
 		}
 	};
 
@@ -82,6 +82,8 @@ namespace shaders {
 			f.x, f.y, f.z, -ew::Dot(f, eye),
 			0, 0, 0, 1
 		);
+
+		return m;
 			//use ew::Cross for cross product!
 	};
 	//Orthographic projection
@@ -95,6 +97,7 @@ namespace shaders {
 			0, 0, -(2 / (far - near)), -((far + near) / (far - near)),
 			0, 0, 0, 1
 		);
+		return m;
 	};
 	//Perspective projection
 	//fov = vertical aspect ratio (radians)
@@ -104,9 +107,10 @@ namespace shaders {
 		ew::Mat4 m = ew::Mat4(
 			1/(c * aspect), 0, 0, 0,
 			0, 1/c, 0, 0,
-			0, 0, (near + far)/ (near - far), 2(far * near)/(near - far),
+			0, 0, (near + far)/ (near - far), 2*(far * near)/(near - far),
 			0, 0, -1, 0
 		);
+		return m;
 	};
 
 }

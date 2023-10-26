@@ -9,5 +9,5 @@ uniform mat4 _Project;
 
 void main(){
 	Normal = vNormal;
-	gl_Position = _Model * vec4(vPos,1.0);
+	gl_Position = _Project * _View * _Model * vec4(vPos,1.0);
 }

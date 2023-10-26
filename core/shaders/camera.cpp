@@ -10,11 +10,11 @@ namespace shaders {
 	{
 		if (orthographic)
 		{
-			return shaders::Orthographic(fov, aspectRatio, nearPlane, farPlane);
+			return shaders::Perspective(orthoSize, aspectRatio, nearPlane, farPlane);
 		}
 		else
 		{
-			return shaders::Perspective(orthoSize, aspectRatio, nearPlane, farPlane);
+			return shaders::Orthographic(fov, aspectRatio, nearPlane, farPlane);
 		}
 	}
 }

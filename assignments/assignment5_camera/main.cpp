@@ -11,8 +11,10 @@
 #include <ew/shader.h>
 #include <ew/procGen.h>
 #include <ew/transform.h>
+#include <shaders/camera.h>
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+void resetValues();
 
 //Projection will account for aspect ratio!
 const int SCREEN_WIDTH = 1080;
@@ -66,6 +68,16 @@ int main() {
 		cubeTransforms[i].position.y = i / (NUM_CUBES / 2) - 0.5;
 	}
 
+	shaders::Camera camera;
+	camera.aspectRatio = SCREEN_WIDTH / SCREEN_HEIGHT;
+	camera.orthographic = false;
+	camera.farPlane = 100;
+	camera.fov = 60;
+	camera.nearPlane = 0.1;
+	camera.orthoSize = 6;
+	camera.position = (0, 0, 5);
+	camera.target = (0, 0, 0);
+
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
@@ -82,6 +94,8 @@ int main() {
 			shader.setMat4("_Model", cubeTransforms[i].getModelMatrix());
 			cubeMesh.draw();
 		}
+		shader.setMat4("_View", camera.ViewMatrix());
+		shader.setMat4("_Project", camera.ProjectionMatrix());
 
 		//Render UI
 		{
@@ -102,6 +116,29 @@ int main() {
 				ImGui::PopID();
 			}
 			ImGui::Text("Camera");
+			ImGui::DragFloat3("Position", &camera.position.x, 0.1f);
+			ImGui::DragFloat3("Target", &camera.target.x, 0.1f);
+			ImGui::Checkbox("Orthographic", &camera.orthographic);
+			if (camera.orthographic)
+			{
+				ImGui::DragFloat("Ortho Height", &camera.orthoSize, 0.1f);
+			}
+			else
+			{
+				ImGui::DragFloat("FOV", &camera.fov, 0.1f);
+			}
+			ImGui::DragFloat("Near Plane", &camera.nearPlane, 0.1f);
+			ImGui::DragFloat("Far Plane", &camera.farPlane, 0.1f);
+
+			if (ImGui::Button("Reset"))
+			{
+				camera.fov = 60;
+				camera.nearPlane = 0.1;
+				camera.orthoSize = 6;
+				camera.position = (0, 0, 5);
+				camera.target = (0, 0, 0);
+			}
+
 			ImGui::End();
 			
 			ImGui::Render();
@@ -116,5 +153,17 @@ int main() {
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+}
+
+void resetValues()
+{
+	shaders::Camera camera;
+
+	camera.farPlane = 100;
+	camera.fov = 60;
+	camera.nearPlane = 0.1;
+	camera.orthoSize = 6;
+	camera.position = (0, 0, 5);
+	camera.target = (0, 0, 0);
 }
 
