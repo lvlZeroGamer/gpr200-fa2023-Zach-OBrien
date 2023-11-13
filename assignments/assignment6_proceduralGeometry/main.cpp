@@ -88,17 +88,23 @@ int main() {
 	ew::MeshData planeMeshData = shaders::createPlane(0.5, 0.5, 5);
 	ew::Mesh planeMesh(planeMeshData);
 
-	//Create Plane
+	//Create Cylinder
 	ew::MeshData cylinderMeshData = shaders::createCylinder(0.5, 0.5, 5);
 	ew::Mesh cylinderMesh(cylinderMeshData);
+
+	//Create Sphere
+	ew::MeshData sphereMeshData = shaders::createSphere(0.5, 5);
+	ew::Mesh sphereMesh(sphereMeshData);
 
 	//Initialize transforms
 	ew::Transform cubeTransform;
 	ew::Transform planeTransform;
 	ew::Transform cylinderTransform;
+	ew::Transform sphereTransform;
 
 	planeTransform.position.x = 1;
 	cylinderTransform.position.x = 3;
+	sphereTransform.position.x = 5;
 
 	resetCamera(camera,cameraController);
 
@@ -143,6 +149,10 @@ int main() {
 		//Draw cylinder
 		shader.setMat4("_Model", cylinderTransform.getModelMatrix());
 		cylinderMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+
+		//Draw sphere
+		shader.setMat4("_Model", sphereTransform.getModelMatrix());
+		sphereMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
 		//Render UI
 		{
