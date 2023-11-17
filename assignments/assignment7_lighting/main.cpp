@@ -20,6 +20,7 @@ void resetCamera(ew::Camera& camera, ew::CameraController& cameraController);
 
 int SCREEN_WIDTH = 1080;
 int SCREEN_HEIGHT = 720;
+const int MAX_LIGHTS = 4;
 
 float prevTime;
 ew::Vec3 bgColor = ew::Vec3(0.1f);
@@ -79,18 +80,29 @@ int main() {
 	ew::Mesh planeMesh(ew::createPlane(5.0f, 5.0f, 10));
 	ew::Mesh sphereMesh(ew::createSphere(0.5f, 64));
 	ew::Mesh cylinderMesh(ew::createCylinder(0.5f, 1.0f, 32));
+	//ew::Mesh lightSphere(ew::createSphere(0.5f, 64));
 
 	//Initialize transforms
 	ew::Transform cubeTransform;
 	ew::Transform planeTransform;
 	ew::Transform sphereTransform;
 	ew::Transform cylinderTransform;
+	//ew::Transform lightTransform;
 	planeTransform.position = ew::Vec3(0, -1.0, 0);
 	sphereTransform.position = ew::Vec3(-1.5f, 0.0f, 0.0f);
 	cylinderTransform.position = ew::Vec3(1.5f, 0.0f, 0.0f);
+	//lightTransform.position = ew::Vec3(0, 1.0, 0);
 
 	//Initialize light
-	Light light;
+	Light light[MAX_LIGHTS];
+	light[0].color = ew::Vec3(1, 1, 1);
+	light[0].position = ew::Vec3(0, 1.0, 0);
+
+	Material kValues;
+	kValues.ambientK = 1;
+	kValues.diffuseK = 1;
+	kValues.specular = 1;
+	kValues.shininess = 2;
 
 
 	resetCamera(camera,cameraController);
@@ -129,8 +141,14 @@ int main() {
 		cylinderMesh.draw();
 
 		//TODO: Render point lights
-		shader.setVec3("_Light.position", light.position);
-		shader.setVec3("_Light.color", light.color);
+		shader.setVec3("_Lights[0].position", light[0].position);
+		shader.setVec3("_Lights[0].color", light[0].color);
+
+		shader.setFloat("ambientK", kValues.ambientK);
+		shader.setFloat("diffuseK", kValues.diffuseK);
+		shader.setFloat("specularK", kValues.specular);
+		shader.setFloat("shininess", kValues.shininess);
+		shader.setVec3("cameraPosition", camera.position);
 
 		//Render UI
 		{
@@ -159,6 +177,11 @@ int main() {
 			}
 
 			ImGui::ColorEdit3("BG color", &bgColor.x);
+			ImGui::SliderFloat("ambientK", &kValues.ambientK, 0.0f, 1.0f);
+			ImGui::SliderFloat("diffuseK", &kValues.diffuseK, 0.0f, 1.0f);
+			ImGui::SliderFloat("specularK", &kValues.specular, 0.0f, 1.0f);
+			ImGui::DragFloat("shininess", &kValues.shininess, 0.1f, 2.0f);
+			ImGui::ColorEdit3("Light color", &light[0].color.x);
 			ImGui::End();
 			
 			ImGui::Render();
