@@ -26,7 +26,7 @@ void main(){
 	vec3 normal = normalize(fs_in.WorldNormal);
 	//TODO: Lighting calculations using corrected normal
 	vec3 w = normalize(_Lights[0].position - fs_in.WorldPosition);
-	vec3 v = normalize
+	vec3 v = normalize(cameraPosition - fs_in.WorldPosition);
 	vec3 h = normalize(w + cameraPosition);
 	vec3 ambient = (_Lights[0].color * ambientK);
 	vec3 diffuse = ((_Lights[0].color * diffuseK) * max(dot(normal, w),0));

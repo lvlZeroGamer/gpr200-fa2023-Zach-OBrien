@@ -73,6 +73,7 @@ int main() {
 
 	ew::Shader shader("assets/defaultLit.vert", "assets/defaultLit.frag");
 	unsigned int brickTexture = ew::loadTexture("assets/brick_color.jpg",GL_REPEAT,GL_LINEAR);
+	ew::Shader unlit("assets/unlit.vert", "assets/unlit.frag");
 
 
 	//Create cube
@@ -80,23 +81,26 @@ int main() {
 	ew::Mesh planeMesh(ew::createPlane(5.0f, 5.0f, 10));
 	ew::Mesh sphereMesh(ew::createSphere(0.5f, 64));
 	ew::Mesh cylinderMesh(ew::createCylinder(0.5f, 1.0f, 32));
-	//ew::Mesh lightSphere(ew::createSphere(0.5f, 64));
+	ew::Mesh lightSphere(ew::createSphere(0.5f, 64));
 
 	//Initialize transforms
 	ew::Transform cubeTransform;
 	ew::Transform planeTransform;
 	ew::Transform sphereTransform;
 	ew::Transform cylinderTransform;
-	//ew::Transform lightTransform;
+	ew::Transform lightTransform;
+
 	planeTransform.position = ew::Vec3(0, -1.0, 0);
 	sphereTransform.position = ew::Vec3(-1.5f, 0.0f, 0.0f);
 	cylinderTransform.position = ew::Vec3(1.5f, 0.0f, 0.0f);
-	//lightTransform.position = ew::Vec3(0, 1.0, 0);
+	
 
 	//Initialize light
 	Light light[MAX_LIGHTS];
 	light[0].color = ew::Vec3(1, 1, 1);
 	light[0].position = ew::Vec3(0, 1.0, 0);
+
+	lightTransform.position = light[0].position;
 
 	Material kValues;
 	kValues.ambientK = 1;
@@ -123,6 +127,7 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.use();
+		
 		glBindTexture(GL_TEXTURE_2D, brickTexture);
 		shader.setInt("_Texture", 0);
 		shader.setMat4("_ViewProjection", camera.ProjectionMatrix() * camera.ViewMatrix());
@@ -149,6 +154,11 @@ int main() {
 		shader.setFloat("specularK", kValues.specular);
 		shader.setFloat("shininess", kValues.shininess);
 		shader.setVec3("cameraPosition", camera.position);
+
+		unlit.setVec3("_Color", light[0].color);
+
+		unlit.setMat4("_Model", lightTransform.getModelMatrix());
+		lightSphere.draw();
 
 		//Render UI
 		{
@@ -177,6 +187,7 @@ int main() {
 			}
 
 			ImGui::ColorEdit3("BG color", &bgColor.x);
+			ImGui::DragFloat3("Light Position", &light[0].position.x, 0.1f);
 			ImGui::SliderFloat("ambientK", &kValues.ambientK, 0.0f, 1.0f);
 			ImGui::SliderFloat("diffuseK", &kValues.diffuseK, 0.0f, 1.0f);
 			ImGui::SliderFloat("specularK", &kValues.specular, 0.0f, 1.0f);
