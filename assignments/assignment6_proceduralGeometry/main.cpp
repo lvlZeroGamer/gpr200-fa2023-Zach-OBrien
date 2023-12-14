@@ -85,7 +85,7 @@ int main() {
 	ew::Mesh cubeMesh(cubeMeshData);
 
 	//Create Plane
-	ew::MeshData planeMeshData = shaders::createPlane(0.5, 0.5, 5);
+	ew::MeshData planeMeshData = shaders::createPlane(50, 50, 5);
 	ew::Mesh planeMesh(planeMeshData);
 
 	//Create Cylinder
